@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-MEDIA_ROOT = 'mediaTest/'
+MEDIA_ROOT = 'media/'
 
 ROOT_URLCONF = 'backend.urls'
 
