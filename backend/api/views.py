@@ -32,3 +32,21 @@ class ProfileView(views.APIView):
         ser = serializer.ProfileSerializer(profile, context={"request": request})
         return response.Response(ser.data)
     
+    def put(self, request, id):
+        try:
+            profile = models.Profile.objects.get(pk=id)
+        except models.Profile.DoesNotExist:
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+        ser = serializer.ProfileSerializer(profile, data=request.data, context={'request': request})
+        if ser.is_valid(raise_exception=True):
+            ser.save()
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+    def delete(self, request, id):
+        try:
+            profile = models.Profile.objects.get(pk=id)
+        except models.Profile.DoesNotExist:
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+        profile.delete()
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
+    

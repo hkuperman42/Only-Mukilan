@@ -11,7 +11,7 @@ class Profile(models.Model):
         MaxValueValidator(116),
         MinValueValidator(18),
     ])
-    height = models.CharField(max_length=10, default="5'9\"", validators=[validators.heightValidator])
+    height = models.CharField(max_length=10, default=r"5'9\"", validators=[validators.heightValidator])
     bio = models.TextField(max_length=250)
     pfp = models.ImageField(upload_to='profilePictures')
 
