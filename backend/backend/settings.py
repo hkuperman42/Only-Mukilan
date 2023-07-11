@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+MEDIA_ROOT = 'mediaTest/'
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
