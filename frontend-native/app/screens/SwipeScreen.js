@@ -6,20 +6,39 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  Animated,
+  PanResponder,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 export default function SwipeScreen({ navigation }) {
-  //This profile is for testing
+  //This profile is for testing. Eventually, there will be a getProfile function.
   const testProfile = {
     name: "Club-kilan",
     bio: "Let's partayyyy.\nI'm not indian for some reason.",
     picture: "../assets/generic-man.png",
   };
-
   const [currentProfile, updateCurrentProfile] = useState(testProfile);
+
+  //This is probably the least self-explanatory bit of code, enables swiping animation using PanResponder.
+  //I'd look at the react native docs
+  const [pan, setPan] = useState(new Animated.ValueXY());
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: Animated.event([null, { dx: pan.x }], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: () => {
+        Animated.spring(pan, {
+          toValue: { x: 0, y: 0 },
+          useNativeDriver: true,
+        }).start();
+      },
+    })
+  ).current;
 
   return (
     <View style={styles.view}>
@@ -28,23 +47,40 @@ export default function SwipeScreen({ navigation }) {
           <Image
             source={require("../assets/hamburger-icon.png")}
             style={{ width: 26, height: 26, left: 15 }}
-          ></Image>
+          />
         </TouchableOpacity>
         <Image
           source={require("../assets/hacked-together-logo.png")}
           style={{ width: 175, height: 42 }}
-        ></Image>
+        />
         <TouchableOpacity
           onPress={() => navigation.navigate("SelfProfileScreen")}
         >
           <Image
             source={require("../assets/human-icon.png")}
             style={{ width: 28, height: 28, right: 15 }}
-          ></Image>
+          />
         </TouchableOpacity>
       </SafeAreaView>
 
-      <View style={[{ padding: 13, paddingTop: 5 }, styles.view]}>
+      <Animated.View
+        style={[
+          {
+            transform: [
+              { translateX: pan.x },
+              {
+                rotate: pan.x.interpolate({
+                  inputRange: [0, 300],
+                  outputRange: ["0deg", "50deg"],
+                }),
+              },
+            ],
+          },
+          styles.view,
+          { padding: 13, paddingTop: 5, backgroundColor: "transparent" },
+        ]}
+        {...panResponder.panHandlers}
+      >
         <ImageBackground
           source={require("../assets/generic-man.png")}
           style={styles.profile}
@@ -67,7 +103,7 @@ export default function SwipeScreen({ navigation }) {
           source={require("../assets/black-box-bottom.png")}
           style={[{ flex: 0.035, width: undefined }, styles.roundedBottom]}
         />
-      </View>
+      </Animated.View>
     </View>
   );
 }
