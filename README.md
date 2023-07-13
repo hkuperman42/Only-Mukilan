@@ -6,3 +6,4 @@ Installed Packages:
 - django
 - djangorestframework
 - django-cors-headers
+- Pillow
