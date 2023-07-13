@@ -15,15 +15,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 export default function SwipeScreen({ navigation }) {
   //This profile is for testing. Eventually, there will be a getProfile function.
-  const testProfile = {
-    name: "Club-kilan",
-    bio: "Let's partayyyy.\nI'm not indian for some reason.",
-    picture: "../assets/generic-man.png",
-  };
-  const [currentProfile, updateCurrentProfile] = useState(testProfile);
+  const [currentProfile, setCurrentProfile] = useState(getNewMukilan());
 
   //This is probably the least self-explanatory bit of code, enables swiping animation using PanResponder.
-  //I'd look at the react native docs
+  const [swipeOpacity, setSwipeOpacity] = useState(new Animated.Value(1));
   const [pan, setPan] = useState(new Animated.ValueXY());
   const panResponder = useRef(
     PanResponder.create({
@@ -31,11 +26,31 @@ export default function SwipeScreen({ navigation }) {
       onPanResponderMove: Animated.event([null, { dx: pan.x }], {
         useNativeDriver: false,
       }),
-      onPanResponderRelease: () => {
-        Animated.spring(pan, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: true,
-        }).start();
+      onPanResponderRelease: (evt, gestureState) => {
+        let newX = gestureState.dx;
+
+        if (newX < 180 && newX > -180) {
+          Animated.spring(pan, {
+            toValue: { x: 0, y: 0 },
+            useNativeDriver: true,
+          }).start();
+        } else {
+          let toExit = newX > 1 ? 1000 : -1000;
+          Animated.timing(pan, {
+            toValue: { x: toExit, y: 0 },
+            duration: 250,
+            useNativeDriver: true,
+          }).start(() => {
+            setCurrentProfile(getNewMukilan);
+            swipeOpacity.setValue(0);
+            pan.setValue({ x: 0, y: 0 });
+            Animated.timing(swipeOpacity, {
+              toValue: 1,
+              duration: 250,
+              useNativeDriver: true,
+            }).start();
+          });
+        }
       },
     })
   ).current;
@@ -77,12 +92,17 @@ export default function SwipeScreen({ navigation }) {
             ],
           },
           styles.view,
-          { padding: 13, paddingTop: 5, backgroundColor: "transparent" },
+          {
+            padding: 13,
+            paddingTop: 5,
+            backgroundColor: "transparent",
+            opacity: swipeOpacity,
+          },
         ]}
         {...panResponder.panHandlers}
       >
         <ImageBackground
-          source={require("../assets/generic-man.png")}
+          source={{ uri: currentProfile.picture, cache: "reload" }}
           style={styles.profile}
           imageStyle={styles.roundedTop}
         >
@@ -106,6 +126,14 @@ export default function SwipeScreen({ navigation }) {
       </Animated.View>
     </View>
   );
+}
+
+function getNewMukilan() {
+  return {
+    name: "Random Image-kilan",
+    bio: "My bio is randomized\n" + Math.random(),
+    picture: "https://picsum.photos/200/300?" + Math.random(),
+  };
 }
 
 const styles = StyleSheet.create({
