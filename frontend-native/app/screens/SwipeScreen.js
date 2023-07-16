@@ -60,8 +60,8 @@ export default function SwipeScreen({ navigation }) {
       <SafeAreaView style={styles.menusAndLogo}>
         <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
           <Image
-            source={require("../assets/hamburger-icon.png")}
-            style={{ width: 26, height: 26, left: 15 }}
+            source={require("../assets/gear-icon.png")}
+            style={{ width: 30, height: 30, left: 15 }}
           />
         </TouchableOpacity>
         <Image
