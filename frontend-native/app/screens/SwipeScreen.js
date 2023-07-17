@@ -5,17 +5,18 @@ import {
   ImageBackground,
   View,
   SafeAreaView,
-  TouchableOpacity,
+  TouchableOpacity, 
   Animated,
   PanResponder,
 } from "react-native";
 import React, { useState, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import axios from "axios";
 
 export default function SwipeScreen({ navigation }) {
   //This profile is for testing. Eventually, there will be a getProfile function.
-  const [currentProfile, setCurrentProfile] = useState(getNewMukilan());
+  const [currentProfile, setCurrentProfile] = useState({ data: {}, error: null, loading: true, refreshing: false});
 
   //This is probably the least self-explanatory bit of code, enables swiping animation using PanResponder.
   const [swipeOpacity, setSwipeOpacity] = useState(new Animated.Value(1));
@@ -41,7 +42,7 @@ export default function SwipeScreen({ navigation }) {
             duration: 250,
             useNativeDriver: true,
           }).start(() => {
-            setCurrentProfile(getNewMukilan);
+            getNewMukilan(setCurrentProfile);
             swipeOpacity.setValue(0);
             pan.setValue({ x: 0, y: 0 });
             Animated.timing(swipeOpacity, {
@@ -54,6 +55,12 @@ export default function SwipeScreen({ navigation }) {
       },
     })
   ).current;
+
+  if (currentProfile.loading === true) { 
+    getNewMukilan(setCurrentProfile)
+  } else {
+    console.log(currentProfile.data);
+  }
 
   return (
     <View style={styles.view}>
@@ -102,7 +109,7 @@ export default function SwipeScreen({ navigation }) {
         {...panResponder.panHandlers}
       >
         <ImageBackground
-          source={{ uri: currentProfile.picture, cache: "reload" }}
+          source={{uri: currentProfile.data.pfp}}//{{ uri: currentProfile.data.pfp, cache: "reload" }}
           style={styles.profile}
           imageStyle={styles.roundedTop}
         >
@@ -114,8 +121,8 @@ export default function SwipeScreen({ navigation }) {
               styles.profile,
             ]}
           >
-            <Text style={styles.name}>{currentProfile.name}</Text>
-            <Text style={styles.bio}>{currentProfile.bio}</Text>
+            <Text style={styles.name}>{currentProfile.data.name}</Text>
+            <Text style={styles.bio}>{currentProfile.data.bio}</Text>
           </ImageBackground>
         </ImageBackground>
 
@@ -128,12 +135,21 @@ export default function SwipeScreen({ navigation }) {
   );
 }
 
-function getNewMukilan() {
-  return {
-    name: "Random Image-kilan",
-    bio: "My bio is randomized\n" + Math.random(),
-    picture: "https://picsum.photos/200/300?" + Math.random(),
-  };
+function getNewMukilan(dataSetter) {
+  axios.get('http://192.168.1.15:8080/api/profile/2/').then(function(response) { 
+      dataSetter({
+        data: response.data,
+        error: null,
+        loading: false,
+        refreshing: false,
+      }); 
+    }).catch( error => {console.log(error.request.responseText)});
+  // return {
+    
+  //   name: "Random Image-kilan",
+  //   bio: "My bio is randomized\n" + Math.random(),
+  //   picture: "https://picsum.photos/200/300?" + Math.random(),
+  // };
 }
 
 const styles = StyleSheet.create({

@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-i=!+9e!4dxkow=%qa9msj%@34wr4b865w_2(-%skcf+x--uj)i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] ### Star enables all hosts, disable for production
+CORS_ORIGIN_ALLOW_ALL = True ### Use this while building using 'npm start' instead of 'npm run build' for react. Disable for production
+# CORS_ALLOWED_ORIGINS = [
+#   "http://localhost:3000",
+#   ""
+# ]
 
 
 # Application definition
@@ -50,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 MEDIA_ROOT = 'media/'

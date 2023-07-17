@@ -1,7 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
+import axios from 'axios'
 
 function App() {
+  axios.get('http://127.0.0.1:8000/api/profile/1/').then(function(response) { console.log("AXIOS HIT!") }).catch( error => {console.log(error)});
+
   return (
     <div className="App">
       <header className="App-header">
