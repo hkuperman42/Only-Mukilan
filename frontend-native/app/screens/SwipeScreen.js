@@ -5,20 +5,21 @@ import {
   ImageBackground,
   View,
   SafeAreaView,
-  TouchableOpacity, 
+  TouchableOpacity,
   Animated,
   PanResponder,
 } from "react-native";
 import React, { useState, useRef } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import axios from "axios";
 
 export default function SwipeScreen({ navigation }) {
-  //This profile is for testing. Eventually, there will be a getProfile function.
-  const [currentProfile, setCurrentProfile] = useState({ data: {}, error: null, loading: true, refreshing: false});
+  const [currentProfile, setCurrentProfile] = useState({
+    data: {},
+    error: null,
+    loading: true,
+    refreshing: false,
+  });
 
-  //This is probably the least self-explanatory bit of code, enables swiping animation using PanResponder.
   const [swipeOpacity, setSwipeOpacity] = useState(new Animated.Value(1));
   const [pan, setPan] = useState(new Animated.ValueXY());
   const panResponder = useRef(
@@ -56,14 +57,14 @@ export default function SwipeScreen({ navigation }) {
     })
   ).current;
 
-  if (currentProfile.loading === true) { 
-    getNewMukilan(setCurrentProfile)
+  if (currentProfile.loading === true) {
+    getNewMukilan(setCurrentProfile);
   } else {
     console.log(currentProfile.data);
   }
 
   return (
-    <View style={styles.view}>
+    <View style={(styles.view, styles.androidSafeAreaView)}>
       <SafeAreaView style={styles.menusAndLogo}>
         <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
           <Image
@@ -109,7 +110,7 @@ export default function SwipeScreen({ navigation }) {
         {...panResponder.panHandlers}
       >
         <ImageBackground
-          source={{uri: currentProfile.data.pfp}}//{{ uri: currentProfile.data.pfp, cache: "reload" }}
+          source={{ uri: currentProfile.data.pfp }}
           style={styles.profile}
           imageStyle={styles.roundedTop}
         >
@@ -136,20 +137,19 @@ export default function SwipeScreen({ navigation }) {
 }
 
 function getNewMukilan(dataSetter) {
-  axios.get('http://192.168.1.15:8080/api/profile/2/').then(function(response) { 
+  axios
+    .get("http://192.168.2.169:8000/api/profile/2/")
+    .then(function (response) {
       dataSetter({
         data: response.data,
         error: null,
         loading: false,
         refreshing: false,
-      }); 
-    }).catch( error => {console.log(error.request.responseText)});
-  // return {
-    
-  //   name: "Random Image-kilan",
-  //   bio: "My bio is randomized\n" + Math.random(),
-  //   picture: "https://picsum.photos/200/300?" + Math.random(),
-  // };
+      });
+    })
+    .catch((error) => {
+      console.log(error.request.responseText);
+    });
 }
 
 const styles = StyleSheet.create({
@@ -157,6 +157,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1,
     flexDirection: "column",
+  },
+  androidSafeAreaView: {
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   bottomColumnView: {
     flex: 1,
