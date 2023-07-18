@@ -8,9 +8,14 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
+  StatusBar,
 } from "react-native";
 import React, { useState, useRef } from "react";
 import axios from "axios";
+
+const API_URL = "http://192.168.1.15:8080/api/"; 
+// Gryphon: http://192.168.1.15:8080/api/
+// Hunter: http://192.168.2.169:8000/api/
 
 export default function SwipeScreen({ navigation }) {
   const [currentProfile, setCurrentProfile] = useState({
@@ -138,7 +143,7 @@ export default function SwipeScreen({ navigation }) {
 
 function getNewMukilan(dataSetter) {
   axios
-    .get("http://192.168.2.169:8000/api/profile/2/")
+    .get(API_URL + "profile/2/") 
     .then(function (response) {
       dataSetter({
         data: response.data,
@@ -149,6 +154,12 @@ function getNewMukilan(dataSetter) {
     })
     .catch((error) => {
       console.log(error.request.responseText);
+      dataSetter({
+        data: {},
+        error: true,
+        loading: false,
+        refreshing: false,
+      })
     });
 }
 
