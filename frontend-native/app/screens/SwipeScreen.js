@@ -69,7 +69,7 @@ export default function SwipeScreen({ navigation }) {
   }
 
   return (
-    <View style={(styles.view, styles.androidSafeAreaView)}>
+    <View style={[styles.view, styles.androidSafeAreaView]}>
       <SafeAreaView style={styles.menusAndLogo}>
         <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
           <Image
