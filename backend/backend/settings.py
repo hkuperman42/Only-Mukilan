@@ -60,6 +60,8 @@ MIDDLEWARE = [
 
 MEDIA_ROOT = 'media/'
 
+MEDIA_URL = '/media/'
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [

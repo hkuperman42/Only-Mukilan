@@ -8,9 +8,14 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
+  StatusBar,
 } from "react-native";
 import React, { useState, useRef } from "react";
 import axios from "axios";
+
+const API_URL = "http://192.168.1.15:8080/api/"; 
+// Gryphon: http://192.168.1.15:8080/api/
+// Hunter: http://192.168.2.169:8000/api/
 
 export default function SwipeScreen({ navigation }) {
   const [currentProfile, setCurrentProfile] = useState({
@@ -64,7 +69,7 @@ export default function SwipeScreen({ navigation }) {
   }
 
   return (
-    <View style={(styles.view, styles.androidSafeAreaView)}>
+    <View style={[styles.view, styles.androidSafeAreaView]}>
       <SafeAreaView style={styles.menusAndLogo}>
         <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
           <Image
@@ -138,7 +143,7 @@ export default function SwipeScreen({ navigation }) {
 
 function getNewMukilan(dataSetter) {
   axios
-    .get("http://192.168.2.169:8000/api/profile/2/")
+    .get(API_URL + "profile/2/") 
     .then(function (response) {
       dataSetter({
         data: response.data,
@@ -148,6 +153,25 @@ function getNewMukilan(dataSetter) {
       });
     })
     .catch((error) => {
+      console.log(error.request.responseText);
+      dataSetter({
+        data: {},
+        error: true,
+        loading: false,
+        refreshing: false,
+      });
+    });
+}
+
+//Example Data: {name: "Mukilan", age: 18, height: "5'9\"", bio: "text", pfp: file*, user: 1} * = Images lack testing
+function createProfile(data) { 
+  axios
+    .post(API_URL + "profile/", data)
+    .then(response => {
+      console.log(response);
+      console.log("Profile Created");
+    })
+    .catch(error => {
       console.log(error.request.responseText);
     });
 }
