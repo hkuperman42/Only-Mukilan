@@ -159,7 +159,20 @@ function getNewMukilan(dataSetter) {
         error: true,
         loading: false,
         refreshing: false,
-      })
+      });
+    });
+}
+
+//Example Data: {name: "Mukilan", age: 18, height: "5'9\"", bio: "text", pfp: file*, user: 1} * = Images lack testing
+function createProfile(data) { 
+  axios
+    .post(API_URL + "profile/", data)
+    .then(response => {
+      console.log(response);
+      console.log("Profile Created");
+    })
+    .catch(error => {
+      console.log(error.request.responseText);
     });
 }
 

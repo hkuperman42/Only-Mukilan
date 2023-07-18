@@ -3,7 +3,22 @@ import './App.css';
 import axios from 'axios'
 
 function App() {
-  axios.get('http://127.0.0.1:8000/api/profile/1/').then(function(response) { console.log("AXIOS HIT!") }).catch( error => {console.log(error)});
+  axios
+    .post("http://192.168.1.15:8080/api/" + "profile/", {
+      name: "Axios Test",
+      age: 18,
+      height: "5'9\"",
+      bio: "Axios Test Profile",
+      pfp: null,
+      user: 1,
+    })
+    .then(response => {
+      console.log(response);
+      console.log("Profile Created");
+    })
+    .catch(error => {
+      console.log(error.request.responseText);
+    });
 
   return (
     <div className="App">
