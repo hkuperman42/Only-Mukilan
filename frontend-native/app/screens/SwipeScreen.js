@@ -12,6 +12,8 @@ import {
 import React, { useState, useRef } from "react";
 import axios from "axios";
 
+const backend_url = "http://192.168.2.169";
+
 export default function SwipeScreen({ navigation }) {
   const [currentProfile, setCurrentProfile] = useState({
     data: {},
@@ -138,7 +140,7 @@ export default function SwipeScreen({ navigation }) {
 
 function getNewMukilan(dataSetter) {
   axios
-    .get("http://192.168.2.169:8000/api/profile/2/")
+    .get(backend_url + ":8000/api/profile/2/")
     .then(function (response) {
       dataSetter({
         data: response.data,
