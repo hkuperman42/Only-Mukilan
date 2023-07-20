@@ -12,8 +12,9 @@ import {
 } from "react-native";
 import React, { useState, useRef } from "react";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://192.168.1.15:8080/api/";
+const API_URL = "http://192.168.2.169:8000/api/";
 // Gryphon: http://192.168.1.15:8080/api/
 // Hunter: http://192.168.2.169:8000/api/
 
@@ -122,13 +123,35 @@ export default function SwipeScreen({ navigation }) {
           <ImageBackground
             source={require("../assets/opacity-gradient.png")}
             style={[
-              { paddingLeft: 10, paddingRight: 10 },
+              {
+                paddingLeft: 10,
+                paddingRight: 10,
+              },
               styles.bottomColumnView,
-              styles.profile,
             ]}
           >
-            <Text style={styles.name}>{currentProfile.data.name}</Text>
-            <Text style={styles.bio}>{currentProfile.data.bio}</Text>
+            <View
+              style={{
+                flexDirection: "row",
+              }}
+            >
+              <View style={styles.bottomColumnView}>
+                <Text style={styles.name}>{currentProfile.data.name}</Text>
+                <Text style={styles.bio}>{currentProfile.data.bio}</Text>
+              </View>
+              <TouchableOpacity
+                style={{
+                  flex: 0.2,
+                  justifyContent: "flex-start",
+                  padding: 5,
+                }}
+              >
+                <Image
+                  source={require("../assets/favorite-icon-deactivated.png")}
+                  style={{ height: 47, width: 47 }}
+                />
+              </TouchableOpacity>
+            </View>
           </ImageBackground>
         </ImageBackground>
 
@@ -184,6 +207,10 @@ const styles = StyleSheet.create({
   },
   androidSafeAreaView: {
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  bottomRowView: {
+    flex: 1,
+    flexDirection: "row",
   },
   bottomColumnView: {
     flex: 1,
