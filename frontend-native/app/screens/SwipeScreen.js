@@ -12,8 +12,9 @@ import {
 } from "react-native";
 import React, { useState, useRef } from "react";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://192.168.1.15:8080/api/"; 
+const API_URL = "http://192.168.2.169:8000/api/";
 // Gryphon: http://192.168.1.15:8080/api/
 // Hunter: http://192.168.2.169:8000/api/
 
@@ -122,13 +123,35 @@ export default function SwipeScreen({ navigation }) {
           <ImageBackground
             source={require("../assets/opacity-gradient.png")}
             style={[
-              { paddingLeft: 10, paddingRight: 10 },
+              {
+                paddingLeft: 10,
+                paddingRight: 10,
+              },
               styles.bottomColumnView,
-              styles.profile,
             ]}
           >
-            <Text style={styles.name}>{currentProfile.data.name}</Text>
-            <Text style={styles.bio}>{currentProfile.data.bio}</Text>
+            <View
+              style={{
+                flexDirection: "row",
+              }}
+            >
+              <View style={styles.bottomColumnView}>
+                <Text style={styles.name}>{currentProfile.data.name}</Text>
+                <Text style={styles.bio}>{currentProfile.data.bio}</Text>
+              </View>
+              <TouchableOpacity
+                style={{
+                  flex: 0.2,
+                  justifyContent: "flex-start",
+                  padding: 5,
+                }}
+              >
+                <Image
+                  source={require("../assets/favorite-icon-deactivated.png")}
+                  style={{ height: 47, width: 47 }}
+                />
+              </TouchableOpacity>
+            </View>
           </ImageBackground>
         </ImageBackground>
 
@@ -143,7 +166,7 @@ export default function SwipeScreen({ navigation }) {
 
 function getNewMukilan(dataSetter) {
   axios
-    .get(API_URL + "profile/2/") 
+    .get(API_URL + "profile/2/")
     .then(function (response) {
       dataSetter({
         data: response.data,
@@ -164,14 +187,14 @@ function getNewMukilan(dataSetter) {
 }
 
 //Example Data: {name: "Mukilan", age: 18, height: "5'9\"", bio: "text", pfp: file*, user: 1} * = Images lack testing
-function createProfile(data) { 
+function createProfile(data) {
   axios
     .post(API_URL + "profile/", data)
-    .then(response => {
+    .then((response) => {
       console.log(response);
       console.log("Profile Created");
     })
-    .catch(error => {
+    .catch((error) => {
       console.log(error.request.responseText);
     });
 }
@@ -184,6 +207,10 @@ const styles = StyleSheet.create({
   },
   androidSafeAreaView: {
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  bottomRowView: {
+    flex: 1,
+    flexDirection: "row",
   },
   bottomColumnView: {
     flex: 1,
