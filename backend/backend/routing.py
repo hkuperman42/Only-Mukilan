@@ -1,8 +1,9 @@
 
 from django.urls import re_path, path
-from api.consumers import TextRoomConsumer
+from channels.routing import URLRouter
+from api import routing
 
 websocket_urlpatterns = [
-    re_path(r'^ws/(?P<room_name>[^/]+)/$', TextRoomConsumer.as_asgi()),
+    path('api/ws/', URLRouter(routing.websocket_urlpatterns))
 ]
 

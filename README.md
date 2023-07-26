@@ -8,3 +8,4 @@ Installed Packages:
 - django-cors-headers
 - Pillow
 - channels["daphne"]
+- channels_redis
