@@ -3,6 +3,7 @@ import { StyleSheet, Text, Image, View, SafeAreaView } from "react-native";
 import SwipeScreen from "./app/screens/SwipeScreen";
 import SettingsScreen from "./app/screens/SettingsScreen";
 import SelfProfileScreen from "./app/screens/SelfProfileScreen";
+import ChatScreen from "./app/screens/ChatScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -15,6 +16,7 @@ export default function App() {
         <Stack.Screen name="SwipeScreen" component={SwipeScreen} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
         <Stack.Screen name="SelfProfileScreen" component={SelfProfileScreen} />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
