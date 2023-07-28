@@ -14,7 +14,7 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://192.168.2.169:8000/api/";
+const API_URL = "http://192.168.1.15:8080/api/";
 // Gryphon: http://192.168.1.15:8080/api/
 // Hunter: http://192.168.2.169:8000/api/
 
