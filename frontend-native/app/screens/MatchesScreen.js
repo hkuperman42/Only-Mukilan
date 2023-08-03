@@ -78,15 +78,16 @@ import {
 
     return (
       <SafeAreaView style={styles.matchesScreen}>
-        <TouchableOpacity onPress={() => navigation.navigate("MessagingScreen")}>
-          <Image
-            source={require("../assets/back-icon.png")}
-            style={{ width: 26, height: 26, left: 15 }}
-          />
-        </TouchableOpacity>
+        
 
         <View style={styles.matchesHeadingContainer}>
           <View style={styles.matchesHeader}>
+          <Pressable style={styles.backButton}
+              onPress={()=>{
+              navigation.navigate("SwipeScreen");
+            }}>
+              <Ionicons name='arrow-back-sharp' size={32} color='black' />
+          </Pressable>
             <Text style={styles.matchesHeading}>Matches</Text>
             <Pressable onPress={()=>{
               navigation.navigate("SelfProfileScreen")
