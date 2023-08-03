@@ -123,59 +123,70 @@ export default function SwipeScreen({ navigation }) {
         ]}
         {...panResponder.panHandlers}
       >
-        <ImageBackground
-          source={{ uri: currentProfile.data.pfp }}
-          style={styles.profile}
-          imageStyle={styles.roundedTop}
+        <View
+          style={[
+            styles.profile,
+            { backgroundColor: "black" },
+            styles.roundedBottom,
+            styles.roundedTop,
+          ]}
         >
           <ImageBackground
-            source={require("../assets/opacity-gradient.png")}
-            style={[
-              {
-                paddingLeft: 10,
-                paddingRight: 10,
-              },
-              styles.bottomColumnView,
-            ]}
+            source={{ uri: currentProfile.data.pfp }}
+            style={styles.profile}
+            imageStyle={styles.roundedTop}
           >
-            <View
-              style={{
-                flexDirection: "row",
-              }}
+            <ImageBackground
+              source={require("../assets/opacity-gradient.png")}
+              style={[
+                {
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                },
+                styles.bottomColumnView,
+              ]}
             >
-              <View style={styles.bottomColumnView}>
-                <Text style={styles.name}>{currentProfile.data.name}</Text>
-                <Text style={styles.bio}>{currentProfile.data.bio}</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() =>
-                  toggleLike(
-                    currentProfile.data.id,
-                    currentProfileIsLiked,
-                    setCurrentProfileIsLiked
-                  )
-                }
+              <View
                 style={{
-                  flex: 0.2,
-                  justifyContent: "flex-start",
-                  padding: 6,
+                  flexDirection: "row",
                 }}
               >
-                <Image
-                  source={
-                    currentProfileIsLiked ? likedIconEnabled : likedIconDisabled
+                <View style={styles.bottomColumnView}>
+                  <Text style={styles.name}>{currentProfile.data.name}</Text>
+                  <Text style={styles.bio}>{currentProfile.data.bio}</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() =>
+                    toggleLike(
+                      currentProfile.data.id,
+                      currentProfileIsLiked,
+                      setCurrentProfileIsLiked
+                    )
                   }
-                  style={{ height: 47, width: 47 }}
-                />
-              </TouchableOpacity>
-            </View>
+                  style={{
+                    flex: 0.2,
+                    justifyContent: "flex-start",
+                    padding: 6,
+                  }}
+                >
+                  <Image
+                    source={
+                      currentProfileIsLiked
+                        ? likedIconEnabled
+                        : likedIconDisabled
+                    }
+                    style={{ height: 47, width: 47 }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </ImageBackground>
           </ImageBackground>
-        </ImageBackground>
 
-        <Image
-          source={require("../assets/black-box-bottom.png")}
-          style={[{ flex: 0.035, width: undefined }, styles.roundedBottom]}
-        />
+          <Image
+            source={require("../assets/black-box-bottom.png")}
+            style={[{ flex: 0.035, width: undefined }, styles.roundedBottom]}
+          />
+        </View>
       </Animated.View>
     </View>
   );
