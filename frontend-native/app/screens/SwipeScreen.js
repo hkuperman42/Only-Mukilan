@@ -13,9 +13,10 @@ import {
 import React, { useState, useRef } from "react";
 import axios from "axios";
 
-const API_URL = "http://192.168.1.15:8080/api/";
+const API_URL = "http://137.49.147.153:8000/api/";
 // Gryphon: http://192.168.1.15:8080/api/
 // Hunter: http://192.168.2.169:8000/api/
+// Mukilan: http://137.49.147.153:8000/api/
 
 export default function SwipeScreen({ navigation }) {
   const [currentProfile, setCurrentProfile] = useState({
