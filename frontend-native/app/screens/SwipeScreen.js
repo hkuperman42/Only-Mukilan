@@ -14,7 +14,7 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://192.168.1.15:8080/api/";
+const API_URL = "http://192.168.2.169:8000/api/";
 // Gryphon: http://192.168.1.15:8080/api/
 // Hunter: http://192.168.2.169:8000/api/
 
@@ -25,6 +25,10 @@ export default function SwipeScreen({ navigation }) {
     loading: true,
     refreshing: false,
   });
+
+  const [currentProfileIsLiked, setCurrentProfileIsLiked] = useState(true);
+  const likedIconEnabled = require("../assets/liked-icon-enabled.png");
+  const likedIconDisabled = require("../assets/liked-icon-disabled.png");
 
   const [swipeOpacity, setSwipeOpacity] = useState(new Animated.Value(1));
   const [pan, setPan] = useState(new Animated.ValueXY());
@@ -48,8 +52,12 @@ export default function SwipeScreen({ navigation }) {
             toValue: { x: toExit, y: 0 },
             duration: 250,
             useNativeDriver: true,
-          }).start(() => {
-            getNewMukilan(setCurrentProfile);
+          }).start(async () => {
+            try {
+              await getNewMukilan(setCurrentProfile, setCurrentProfileIsLiked);
+            } catch (error) {
+              console.log(error);
+            }
             swipeOpacity.setValue(0);
             pan.setValue({ x: 0, y: 0 });
             Animated.timing(swipeOpacity, {
@@ -64,7 +72,7 @@ export default function SwipeScreen({ navigation }) {
   ).current;
 
   if (currentProfile.loading === true) {
-    getNewMukilan(setCurrentProfile);
+    getNewMukilan(setCurrentProfile, setCurrentProfileIsLiked);
   } else {
     console.log(currentProfile.data);
   }
@@ -115,58 +123,119 @@ export default function SwipeScreen({ navigation }) {
         ]}
         {...panResponder.panHandlers}
       >
-        <ImageBackground
-          source={{ uri: currentProfile.data.pfp }}
-          style={styles.profile}
-          imageStyle={styles.roundedTop}
+        <View
+          style={[
+            styles.profile,
+            { backgroundColor: "black" },
+            styles.roundedBottom,
+            styles.roundedTop,
+          ]}
         >
           <ImageBackground
-            source={require("../assets/opacity-gradient.png")}
-            style={[
-              {
-                paddingLeft: 10,
-                paddingRight: 10,
-              },
-              styles.bottomColumnView,
-            ]}
+            source={{ uri: currentProfile.data.pfp }}
+            style={styles.profile}
+            imageStyle={styles.roundedTop}
           >
-            <View
-              style={{
-                flexDirection: "row",
-              }}
+            <ImageBackground
+              source={require("../assets/opacity-gradient.png")}
+              style={[
+                {
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                },
+                styles.bottomColumnView,
+              ]}
             >
-              <View style={styles.bottomColumnView}>
-                <Text style={styles.name}>{currentProfile.data.name}</Text>
-                <Text style={styles.bio}>{currentProfile.data.bio}</Text>
-              </View>
-              <TouchableOpacity
+              <View
                 style={{
-                  flex: 0.2,
-                  justifyContent: "flex-start",
-                  padding: 5,
+                  flexDirection: "row",
                 }}
               >
-                <Image
-                  source={require("../assets/favorite-icon-deactivated.png")}
-                  style={{ height: 47, width: 47 }}
-                />
-              </TouchableOpacity>
-            </View>
+                <View style={styles.bottomColumnView}>
+                  <Text style={styles.name}>{currentProfile.data.name}</Text>
+                  <Text style={styles.bio}>{currentProfile.data.bio}</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() =>
+                    toggleLike(
+                      currentProfile.data.id,
+                      currentProfileIsLiked,
+                      setCurrentProfileIsLiked
+                    )
+                  }
+                  style={{
+                    flex: 0.2,
+                    justifyContent: "flex-start",
+                    padding: 6,
+                  }}
+                >
+                  <Image
+                    source={
+                      currentProfileIsLiked
+                        ? likedIconEnabled
+                        : likedIconDisabled
+                    }
+                    style={{ height: 47, width: 47 }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </ImageBackground>
           </ImageBackground>
-        </ImageBackground>
 
-        <Image
-          source={require("../assets/black-box-bottom.png")}
-          style={[{ flex: 0.035, width: undefined }, styles.roundedBottom]}
-        />
+          <Image
+            source={require("../assets/black-box-bottom.png")}
+            style={[{ flex: 0.035, width: undefined }, styles.roundedBottom]}
+          />
+        </View>
       </Animated.View>
     </View>
   );
 }
 
-function getNewMukilan(dataSetter) {
+async function toggleLike(id, isLiked, currentProfileIsLikedSetter) {
+  currentProfileIsLikedSetter(!isLiked);
+  try {
+    await setLikedMukilans(id, isLiked ? 0 : 1);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getLikedMukilans() {
+  try {
+    const likedMukilanArray = await AsyncStorage.getItem("liked-mukilan-array");
+
+    let res = JSON.parse(likedMukilanArray);
+    if (res === null || !Array.isArray(res) || res.length != 250) {
+      res = new Array(250).fill(0);
+    }
+    return res;
+  } catch (error) {
+    console.log(error);
+    return new Array(250).fill(0);
+  }
+}
+
+async function setLikedMukilans(mukilanID, value) {
+  if (mukilanID >= 250 || mukilanID < 0) return;
+
+  try {
+    let likedMukilanArray = await getLikedMukilans();
+    likedMukilanArray[mukilanID] = value;
+    let jsonValue = JSON.stringify(likedMukilanArray);
+    await AsyncStorage.setItem("liked-mukilan-array", jsonValue);
+  } catch (error) {
+    console.log(error);
+  }
+}
+async function getNewMukilan(dataSetter, currentProfileIsLikedSetter) {
+  //Change this to some better id-picking algorithm later
+  let id = Math.round(Math.random() * 4 + 1);
+  if (id === 5) id = 1; //Equalize probabilities to uniform distribution
+  if (id === 4) id = 5; //Account for the lack of id === 4
+
   axios
-    .get(API_URL + "profile/2/")
+    .get(API_URL + "profile/" + id + "/")
     .then(function (response) {
       dataSetter({
         data: response.data,
@@ -184,6 +253,15 @@ function getNewMukilan(dataSetter) {
         refreshing: false,
       });
     });
+
+  try {
+    let likedMukilanArray = await getLikedMukilans();
+    currentProfileIsLikedSetter(
+      likedMukilanArray != null && likedMukilanArray[id] === 1
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 //Example Data: {name: "Mukilan", age: 18, height: "5'9\"", bio: "text", pfp: file*, user: 1} * = Images lack testing
