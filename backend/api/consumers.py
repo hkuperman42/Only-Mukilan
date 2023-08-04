@@ -19,8 +19,12 @@ class TextRoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        message_data_json = json.loads(text_data)
+        id = message_data_json["id"]
+        text = message_data_json["text"]
+        time = message_data_json["time"]
+        user = message_data_json["user"]
+        message = { 'id': id, 'text': text, 'time': time,'user': user }
         # self.send(text_data=json.dumps({"message": message}))
         # text = text_data_json['text']
         # sender = text_data_json['sender']
@@ -34,6 +38,4 @@ class TextRoomConsumer(AsyncWebsocketConsumer):
     
     async def chat_message(self, event):
         message = event['message']
-        await self.send(text_data=json.dumps({
-            'message': message,
-        }))
+        await self.send(text_data=json.dumps(message))
