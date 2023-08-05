@@ -16,7 +16,7 @@ import {
   import MatchComponent from "../components/MatchComponent";
   import { NavigationContainer } from "@react-navigation/native";
   import { createNativeStackNavigator } from "@react-navigation/native-stack";
-  import { getMatches, saveMatches } from "../utilities/matchesStorage";
+  import { getMatches, saveMatches } from "../utilities/MatchesStorage";
   
   const webSocketURL = 'ws://192.168.1.15:8080/api/ws/test/'
 
