@@ -13,6 +13,7 @@ import {
   import React, { useState, useCallback, useEffect, useRef } from "react";
   import useWebSocket from "react-use-websocket";
   import MessageComponent from "../components/MessageComponent";
+  import { getMessages, addMessage, saveMessages } from "../utilities/MessagesStorage";
   import { Feather, Ionicons } from "@expo/vector-icons";
   import { NavigationContainer } from "@react-navigation/native";
   import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -22,27 +23,7 @@ import {
   export default function MessagingScreen({ route, navigation }) {
     const chatBar = useRef();
     const newTextValue = useRef("");
-    const [chatMessages, setChatMessages] = useState([
-      {
-        id: 3,
-        text: "Where are my arms?",
-        time: "07:50",
-        user: "Johnathan White",
-      },
-      {
-        id: 2,
-        text: "Idk bro",
-        time: "9:16",
-        user: "Alexander Pollard",
-        
-      },
-      {
-        id: 1,
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id ornare arcu odio ut sem nulla pharetra diam. Egestas diam in arcu cursus euismod. Metus aliquam eleifend mi in. Pulvinar pellentesque habitant morbi tristique senectus. Netus et malesuada fames ac turpis. Et netus et malesuada fames ac. Praesent semper feugiat nibh sed pulvinar. Mattis ullamcorper velit sed ullamcorper. Diam phasellus vestibulum lorem sed risus. Tempus imperdiet nulla malesuada pellentesque. Tempor nec feugiat nisl pretium fusce id velit. Ipsum dolor sit amet consectetur adipiscing elit pellentesque habitant. Sit amet nulla facilisi morbi tempus. Est velit egestas dui id.",
-        time: "3:12",
-        user: "Brendan Wilson",
-      }
-    ]);
+    const [chatMessages, setChatMessages] = useState([]);
 
     const { name, id } = route?.params ? route.params : {name: "No Name Given", id: -1};
     const {sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket} = useWebSocket(
@@ -53,16 +34,24 @@ import {
         shouldReconnect: (closeEvent) => true,
       },
     );
+    
+    useEffect(()=>{loadMatches();}, [])
+
+    async function loadMatches() {
+      setChatMessages(await getMessages(id));
+    }
 
     useEffect(() => {
       if (lastJsonMessage !== null && lastJsonMessage !== {}) {
-        setChatMessages([lastJsonMessage, ...chatMessages]);
+        let newMessages = [lastJsonMessage, ...chatMessages];
+        setChatMessages(newMessages);
+        saveMessages(newMessages, id);
       }
     }, [lastJsonMessage, setChatMessages])
 
     function submitText() {
       sendJsonMessage({
-        'id': chatMessages[0].id + 1,
+        'id': chatMessages[0]?.id ? chatMessages[0].id + 1 : 0,
         'text': newTextValue.current,
         'time': "7:51",
         'user': "Mukilion: God of Mukile"
