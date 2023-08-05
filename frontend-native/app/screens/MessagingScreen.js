@@ -17,10 +17,11 @@ import {
   import { NavigationContainer } from "@react-navigation/native";
   import { createNativeStackNavigator } from "@react-navigation/native-stack";
   
-  const webSocketURL = 'ws://192.168.1.15:8080/api/ws/test/'
+  const webSocketURL = 'ws://192.168.1.15:8080/api/ws/'
 
   export default function MessagingScreen({ route, navigation }) {
-    const [newTextValue, setNewTextValue] = useState("");
+    const chatBar = useRef();
+    const newTextValue = useRef("");
     const [chatMessages, setChatMessages] = useState([
       {
         id: 3,
@@ -42,9 +43,10 @@ import {
         user: "Brendan Wilson",
       }
     ]);
-    const textRef = useRef();
+
+    const { name, id } = route?.params ? route.params : {name: "No Name Given", id: -1};
     const {sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket} = useWebSocket(
-      webSocketURL,
+      webSocketURL + id + '/',
       {
         onOpen: () => console.log("Opened WebSocket Connection"),
         onClose: () => console.log("Websocket Closed"),
@@ -58,16 +60,15 @@ import {
       }
     }, [lastJsonMessage, setChatMessages])
 
-    const { name, id } = route?.params ? route.params : {name: "No Name Given", id: -1};
-
     function submitText() {
       sendJsonMessage({
         'id': chatMessages[0].id + 1,
-        'text': newTextValue,
+        'text': newTextValue.current,
         'time': "7:51",
         'user': "Mukilion: God of Mukile"
       });
-      setNewTextValue("");
+      newTextValue.current = "";
+      chatBar.current.clear();
     }
       
     return (
@@ -100,8 +101,8 @@ import {
         </View>
         <View style={styles.messageInputContainer}>
           <TextInput 
-            value={newTextValue}
-            onChangeText={(value)=>setNewTextValue(value)}
+            ref={chatBar}
+            onChangeText={(value)=>{newTextValue.current = value;}}
             style={styles.messageInput}
             placeholder="Text message" 
             onSubmitEditing={submitText}>

@@ -1,10 +1,11 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function MessageComponent({ message, user, showTime }) {
     const [isShowingTime, setIsShowingTime] = useState(showTime);
-
+    useEffect(()=>{setIsShowingTime(showTime)}, [showTime])
+    
     return (
         <Pressable style={[styles.component, (message.id === user ? styles.rightText : styles.leftText)]}
                 onPress={()=>setIsShowingTime(!isShowingTime)}>

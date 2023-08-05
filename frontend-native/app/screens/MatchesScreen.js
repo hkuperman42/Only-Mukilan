@@ -16,70 +16,21 @@ import {
   import MatchComponent from "../components/MatchComponent";
   import { NavigationContainer } from "@react-navigation/native";
   import { createNativeStackNavigator } from "@react-navigation/native-stack";
+  import { getMatches, saveMatches } from "../utilities/matchesStorage";
   
   const webSocketURL = 'ws://192.168.1.15:8080/api/ws/test/'
 
   export default function MatchesScreen({ navigation }) {
-    const [log, setLog] = useState("");
+    const [matches, setMatches] = useState([]);
     
-    const {sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket} = useWebSocket(
-      webSocketURL,
-      {
-        onOpen: () => console.log("Opened WebSocket Connection"),
-        onClose: () => console.log("Websocket Closed"),
-        shouldReconnect: (closeEvent) => true,
-      },
-    );
-
-    useEffect(() => {
-      if (lastJsonMessage !== null && lastJsonMessage !== {}) {
-        setLog((prev) => prev + lastJsonMessage['message'] + "\n");
-      }
-    }, [lastJsonMessage, setLog])
-
-    const matches = [
-      {
-        id: 1,
-        name: 'Test Room 1',
-        messages: [
-          {
-            id: '1a',
-            text: 'This is a test message!',
-            user: 'Thomas',
-            time: '7:30',
-          },
-          {
-            id: '1b',
-            text: 'This is also a test message!',
-            user: 'Jerry',
-            time: '7:31',
-          },
-        ]
-      },
-      {
-        id: 2,
-        name: 'Test Room 2',
-        messages: [
-          {
-            id: '2a',
-            text: 'Spaighetteyi!',
-            user: 'Greggary',
-            time: '12:06',
-          },
-          {
-            id: '2b',
-            text: 'Indeed!',
-            user: 'JThomas',
-            time: '1:57',
-          },
-        ]
-      }
-    ]
+    useEffect(() => {loadMatches();}, []);
+    
+    async function loadMatches() {
+      setMatches(await getMatches());
+    }
 
     return (
       <SafeAreaView style={styles.matchesScreen}>
-        
-
         <View style={styles.matchesHeadingContainer}>
           <View style={styles.matchesHeader}>
           <Pressable style={styles.backButton}
@@ -158,4 +109,3 @@ import {
       paddingBottom: 30
     }
   });
-  
